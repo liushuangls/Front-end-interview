@@ -15,18 +15,16 @@ let obj = {
 	}
 }
 setTimeout(obj.fn, 10) // undefined
-// 上面的调用this指向全局，相当于把fn隐式赋值给了setTimeout的第一个参数，相当于下面
+// 上面的调用this指向全局，因为obj.fn会隐式赋值给setTimeout的第一个参数，相当于下面
 let fn = obj.fn
 fn() // undefined，虽然引用的是obj的属性，但实际上它引用的是fn函数本身。
 // 解决方案
 setTimeout(obj.fn.bind(obj), 10)
 ```
 
-
-
 undefined + 1?
 
-- 隐式转换后两边不能使用 `+` 操作符进行运算的表达式结果为 `NaN`。
+- 隐式转换后两边不能使用 `+` 操作符进行运算的表达式 结果为 `NaN`。
 
 箭头函数与普通函数的区别？
 
