@@ -9,7 +9,7 @@
 
 setTimeout中的this指向？
 
-```
+```js
 let obj = {
 	a: 10,
 	fn: function () {
