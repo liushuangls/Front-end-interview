@@ -15,7 +15,7 @@ const obj = {
   }
 }
 setTimeout(obj.fn, 10) // undefined
-// 上面的调用this指向全局，因为obj.fn会隐式赋值给setTimeout的第一个参数，相当于下面
+// 上面的调用中 this 指向全局，因为obj.fn会隐式赋值给setTimeout的第一个参数，相当于下面
 let fn = obj.fn
 fn() // undefined，虽然引用的是obj的属性，但实际上它引用的是fn函数本身。
 // 解决方案
