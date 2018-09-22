@@ -1,5 +1,3 @@
-# Front-end-interview
-
 ## 目录
 
 - [JavaScript](#javascript)
@@ -9,11 +7,11 @@
 
 setTimeout中的this指向？
 
-```js
+```javascript
 let obj = {
 	a: 10,
 	fn: function () {
-		console.log(this.a)
+    console.log(this.a)
 	}
 }
 setTimeout(obj.fn, 10) // undefined
@@ -28,8 +26,6 @@ undefined + 1?
 
 - 隐式转换后两边不能使用 `+` 操作符进行运算的表达式结果为 `NaN`。
 
-
-
 箭头函数与普通函数的区别？
 
 - 箭头函数有作用域。
@@ -38,7 +34,19 @@ undefined + 1?
 
 - 箭头函数会把 arguments 当成一个普通的变量，但是arguments可以用...rest取代。
 
-  function foo() { setTimeout(() => { console.log(this.a) }, 10) } let obj = { a: 1 } foo.call(obj) // 1 // 类似于下面 function foo() { const self = this setTimeout(function () { console.log(self.a) }, 10) } foo.call(obj) // 1
+  ```js
+  function foo() { 
+    setTimeout(() => { console.log(this.a) }, 10) 
+  } 
+  let obj = { a: 1 } 
+  foo.call(obj) // 1 
+  // 类似于下面 
+  function foo() { 
+    const self = this 
+    setTimeout(function () { console.log(self.a) }, 10) 
+  } 
+  foo.call(obj) // 1
+  ```
 
 什么是作用域？
 
