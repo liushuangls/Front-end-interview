@@ -7,7 +7,7 @@
 
 setTimeout中的this指向？
 
-```javascript
+```js
 let obj = {
 	a: 10,
 	fn: function () {
@@ -22,13 +22,13 @@ fn() // undefined，虽然引用的是obj的属性，但实际上它引用的是
 setTimeout(obj.fn.bind(obj), 10)
 ```
 
+
+
 undefined + 1?
 
 - 隐式转换后两边不能使用 `+` 操作符进行运算的表达式结果为 `NaN`。
 
 箭头函数与普通函数的区别？
-
-- 箭头函数有作用域。
 
 - 箭头函数中的this继承自它的外层作用域，并且不能被改变。
 
