@@ -11,7 +11,7 @@ setTimeout中的this指向？
 let obj = {
 	a: 10,
 	fn: function () {
-    console.log(this.a)
+		console.log(this.a)
 	}
 }
 setTimeout(obj.fn, 10) // undefined
