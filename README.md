@@ -8,11 +8,11 @@
 setTimeout中的this指向？
 
 ```js
-let obj = {
-	a: 10,
-	fn: function () {
-		console.log(this.a)
-	}
+const obj = {
+  a: 10,
+  fn: function() {
+    console.log(this.a)
+  }
 }
 setTimeout(obj.fn, 10) // undefined
 // 上面的调用this指向全局，因为obj.fn会隐式赋值给setTimeout的第一个参数，相当于下面
@@ -58,3 +58,4 @@ undefined + 1?
 使用css如何选择被选中的复选框/单选框？
 
 - `:checked` CSS 伪类选择器表示任何处于选中状态的radio(``<input type="radio">``), checkbox (``<input type="checkbox">``) 或("select") 元素中的option HTML元素("option")。
+
