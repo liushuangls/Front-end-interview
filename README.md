@@ -51,6 +51,10 @@ undefined + 1?
 - 用来存储、访问变量的一套规则，这套规则用来管理引擎如何在当前作用域及子作用域中根据标识符名进行变量查找。
 - JavaScript 采用词法作用域(lexical scoping)，也就是静态作用域。
 
+null的类型？
+
+- `null`本身为基本类型，但是`typeof null`返回值为`object`这是语言本身的bug。 
+- 原理：不同的对象在底层表示为二进制，js中前三位为0的话被判断为`object`，而`null`的二进制都为0，因此`typeof null`为`object`。
 
 
 ## CSS
