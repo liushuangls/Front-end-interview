@@ -103,6 +103,88 @@ JSON.stringify(fn) // undefined
 - 由于加载了多个页面所需的框架、应用代码和资源，导致初始页面加载时间较长。
 - SPA 依赖于 JavaScript 来呈现内容，但并非所有搜索引擎都在抓取过程中执行 JavaScript。这无意中损害了应用的搜索引擎优化（SEO）。为了解决这个问题，可以在服务器端渲染你的应用，或者使用诸如 [Prerender](https://prerender.io/) 的服务来“在浏览器中呈现你的 javascript，保存静态 HTML，并将其返回给爬虫”。
 
+### 使用`let`、`var`和`const`创建变量有什么区别？
+
+用`var`声明的变量的作用域是它当前的执行上下文，它可以是嵌套的函数，也可以是声明在任何函数外的变量。
+
+`let`和`const`是块级作用域，意味着它们只能在最近的一组花括号（function、if-else 代码块或 for 循环中）中访问。
+
+`var`会使变量提升，这意味着变量可以在声明之前使用。`let`和`const`不会使变量提升，提前使用会报错。
+
+用`var`重复声明不会报错，但`let`和`const`会。
+
+`let`和`const`的区别在于：`let`允许多次赋值，而`const`只允许一次。
+
+### 你能举出一个柯里化函数（curry function）的例子吗？它有哪些好处？
+
+柯里化（currying）是一种模式，其中具有多个参数的函数被分解为多个函数，当被串联调用时，将一次一个地累积所有需要的参数。这种技术帮助编写函数式风格的代码，使代码更易读、紧凑。值得注意的是，对于需要被 curry 的函数，它需要从一个函数开始，然后分解成一系列函数，每个函数都需要一个参数。
+
+```js
+function curry(fn) {
+  if (fn.length === 0) {
+    return fn;
+  }
+
+  function _curried(depth, args) {
+    // 封装后的fn，再次调用封装后的fn时，如果不是最后一个参数，返回封装后的fn，如果是返回fn运行的结果
+    return function(newArgument) {
+      if (depth - 1 === 0) {
+        return fn(...args, newArgument);
+      }
+      return _curried(depth - 1, [...args, newArgument]);
+    };
+  }
+
+  return _curried(fn.length, []);
+}
+
+function add(a, b) {
+  return a + b;
+}
+
+var curriedAdd = curry(add);
+var addFive = curriedAdd(5);
+
+var result = [0, 1, 2, 3, 4, 5].map(addFive); // [5, 6, 7, 8, 9, 10]
+```
+
+### Function.length?
+
+`length` 是函数对象的一个属性值，指该函数有多少个必须要传入的参数，即形参的个数。
+
+### 使用扩展运算符（spread）的好处是什么，它与使用剩余参数语句（rest）有什么区别？
+
+在函数泛型编码时，ES6 的扩展运算符非常有用，因为我们可以轻松创建数组和对象的拷贝，而无需使用`Object.assign`、`slice`或其他函数库。这个语言特性在 Redux 和 rx.js 的项目中经常用到。
+
+```js
+function putDookieInAnyArray(arr) {
+  return [...arr, 'dookie'];
+}
+
+const result = putDookieInAnyArray(['I', 'really', "don't", 'like']); // ["I", "really", "don't", "like", "dookie"]
+
+const person = {
+  name: 'Todd',
+  age: 29,
+};
+
+const copyOfTodd = { ...person };
+```
+
+ES6 的剩余参数语句提供了一个简写，允许我们将不定数量的参数表示为一个数组。它就像是扩展运算符语法的反面，将数据收集到数组中，而不是解构数组。剩余参数语句在函数参数、数组和对象的解构赋值中有很大作用。
+
+```js
+function addFiveToABunchOfNumbers(...numbers) {
+  return numbers.map(x => x + 5);
+}
+
+const result = addFiveToABunchOfNumbers(4, 5, 6, 7, 8, 9, 10); // [9, 10, 11, 12, 13, 14, 15]
+
+const [a, b, ...rest] = [1, 2, 3, 4]; // a: 1, b: 2, rest: [3, 4]
+```
+
+
+
 ## CSS
 
 ### 使用css如何选择被选中的复选框/单选框？
@@ -173,4 +255,4 @@ JSON.stringify(fn) // undefined
 ### 什么是渐进式渲染（progressive rendering）？
 
 - 渐进式渲染是用于提高网页性能（尤其是提高用户感知的加载速度），以尽快呈现页面的技术。
-- 一些举例：图片懒加载、确定显示内容的优先级（分层次渲染）、
+- 一些举例：图片懒加载、确定显示内容的优先级（分层次渲染）。
