@@ -186,8 +186,180 @@ const [a, b, ...rest] = [1, 2, 3, 4]; // a: 1, b: 2, rest: [3, 4]
 ### 数组去重？
 
 ```js
+// ES6 提供了新的数据结构 Set。它类似于数组，但是成员的值都是唯一的，没有重复的值。
 let arr = [1,2,3,3]
 [...new Set(arr)] // [1,2,3]
+```
+
+### offsetWidth/offsetHeight,clientWidth/clientHeight与scrollWidth/scrollHeight的区别
+
+- offsetWidth/offsetHeight返回值包含**content + padding + border**
+- clientWidth/clientHeight返回值只包含**content + padding**
+- scrollWidth/scrollHeight返回值包含**content + padding + 溢出内容的尺寸**
+
+### sessionStorage,localStorage,cookie区别
+
+- cookie会在请求时发送到服务器，作为会话标识，服务器可修改cookie；web storage不会发送到服务器
+- 有效期：cookie在设置的有效期内有效，默认为浏览器关闭；sessionStorage在窗口关闭前有效，localStorage长期有效，直到用户删除
+- 共享：sessionStorage不能共享，localStorage在同源文档之间共享，cookie在同源且符合path规则的文档之间共享
+- 浏览器不能保存超过300个cookie，单个服务器不能超过20个，每个cookie不能超过4k。web storage大小支持能达到5M
+
+### 应用程序存储和离线web应用
+
+HTML5新增应用程序缓存，允许web应用将应用程序自身保存到用户浏览器中，用户离线状态也能访问。
+
+- 为html元素设置manifest属性:`<html manifest="myapp.appcache">`，其中后缀名只是一个约定，真正识别方式是通过`text/cache-manifest`作为MIME类型。所以需要配置服务器保证设置正确 
+- manifest文件首行为`CACHE MANIFEST`，其余就是要缓存的URL列表，每个一行，相对路径都相对于manifest文件的url。注释以#开头
+- url分为三种类型：`CACHE`:为默认类型。`NETWORK`：表示资源从不缓存。 `FALLBACK`:每行包含两个url，第二个URL是指需要加载和存储在缓存中的资源， 第一个URL是一个前缀。任何匹配该前缀的URL都不会缓存，如果从网络中载入这样的URL失败的话，就会用第二个URL指定的缓存资源来替代。
+- 以下是一个文件例子：
+
+```js
+CACHE MANIFEST
+
+CACHE:
+myapp.html
+myapp.css
+myapp.js
+
+FALLBACK:
+videos/ offline_help.html
+
+NETWORK:
+cgi/
+```
+
+### 字符串比较？
+
+- 按照字母顺序比较unicode值大小。
+
+### 原型继承
+
+```js
+function Shape() {}
+
+function Rect() {}
+
+// 方法1
+// 正确设置原型链实现继承
+// Rect的实例将不能继承Shape的属性，而只能通过原型访问
+// 继承应该是继承方法而不是属性，为子类设置父类实例属性应该是通过在子类构造函数中调用父类构造函数进行初始化
+Rect.prototype = new Shape();
+
+// 方法2
+// 父类构造函数原型与子类相同。修改子类原型添加方法会修改父类
+Rect.prototype = Shape.prototype;
+
+// 方法3
+// 正确设置原型链且避免方法1.2中的缺点
+// 但是没有继承Shape的属性
+Rect.prototype = Object.create(Shape.prototype);
+
+// 改进：
+// 所有三种方法应该在子类构造函数中调用父类构造函数实现实例属性初始化
+// 用新创建的对象替代子类默认原型，设置Rect.prototype.constructor = Rect;保证一致性
+function Rect() {
+    Shape.call(this);
+}
+```
+
+### 现有一个Page类,其原型对象上有许多以post开头的方法(如postMsg);另有一拦截函数chekc,只返回ture或false.请设计一个函数,该函数应批量改造原Page的postXXX方法,在保留其原有功能的同时,为每个postXXX方法增加拦截验证功能,当chekc返回true时继续执行原postXXX方法,返回false时不再执行原postXXX方法
+
+```js
+function Page() {}
+
+Page.prototype = {
+  postA: function (a) {
+    console.log('a:' + a);
+  },
+  postB: function (b) {
+    console.log('b:' + b);
+  },
+  postC: function (c) {
+    console.log('c:' + c);
+  },
+  check: function () {
+    return Math.random() > 0.5;
+  }
+}
+
+function checkfy(obj) {
+  for (var key in obj) {
+    if (key.indexOf('post') === 0 && typeof obj[key] === 'function') {
+      var fn = obj[key];
+      obj[key] = function () {
+        if (obj.check()) {
+          fn.apply(obj, arguments);
+        }
+      };
+    }
+  }
+} // end checkfy()
+
+checkfy(Page.prototype);
+
+```
+
+### 编写javascript深度克隆函数deepClone
+
+```js
+function deepClone(obj) {
+    var _toString = Object.prototype.toString;
+
+    // null, undefined, non-object, function
+    if (!obj || typeof obj !== 'object') {
+        return obj;
+    }
+
+    // DOM Node
+    if (obj.nodeType && 'cloneNode' in obj) {
+        return obj.cloneNode(true);
+    }
+
+    // Date
+    if (_toString.call(obj) === '[object Date]') {
+        return new Date(obj.getTime());
+    }
+
+    // RegExp
+    if (_toString.call(obj) === '[object RegExp]') {
+        var flags = [];
+        if (obj.global) { flags.push('g'); }
+        if (obj.multiline) { flags.push('m'); }
+        if (obj.ignoreCase) { flags.push('i'); }
+
+        return new RegExp(obj.source, flags.join(''));
+    }
+
+    var result = Array.isArray(obj) ? [] :
+        obj.constructor ? new obj.constructor() : {};
+
+    for (var key in obj ) {
+        result[key] = deepClone(obj[key]);
+    }
+
+    return result;
+}
+```
+
+### 完成一个函数,接受数组作为参数,数组元素为整数或者数组,数组元素包含整数或数组,函数返回扁平化后的数组
+
+```js
+function flat(arr) {
+  let newArr = []
+  function f(arr) {
+     for (let v of arr) {
+       if (Array.isArray(v)) {
+         f(v)
+       } else {
+         newArr.push(v)
+       }
+     }
+  }
+  f(arr)
+  return newArr
+}
+
+flat([1, [2, [ [3, 4], 5], 6]])
 ```
 
 
@@ -234,13 +406,25 @@ let arr = [1,2,3,3]
 
 - 当使用`translate()`时，元素仍然占据其原始空间（有点像`position：relative`），这与改变绝对定位不同。
 
+### `link`与`@import`的区别
+
+- `link`最大限度支持并行下载，`@import`过多嵌套导致串行下载，出现FOUC
+- `@import`必须在样式规则之前，可以在css文件中引用其他文件
+
+### 如何水平居中一个元素
+
+- inline：`text-align: center;`、`line-height`。
+- block:`margin:auto`、 position 加 translate、绝对定位、flex
+
 ## HTML
 
 ### `DOCTYPE`有什么用？
 
-- `DOCTYPE`是“document type”的缩写。它是 HTML 中用来区分标准模式和[怪异模式](https://quirks.spec.whatwg.org/#history)的声明，用来告知浏览器使用标准模式渲染页面。
+- `<!doctype>`声明不是一个HTML标签，是一个用于告诉浏览器当前HTMl版本的指令。
+- 现代浏览器的html布局引擎通过检查doctype决定使用兼容模式还是标准模式对文档进行渲染，一些浏览器有一个接近标准模型。
+- 在HTML4.01中`<!doctype>`声明指向一个DTD，由于HTML4.01基于SGML，所以DTD指定了标记规则以保证浏览器正确渲染内容。
 
-- html5中，在页面开始处添加`<!DOCTYPE html>`即可。
+- HTML5不基于SGML，所以不用指定DTD。
 
 ### HTML5有哪些更新？
 
@@ -264,3 +448,134 @@ let arr = [1,2,3,3]
 - 渐进式渲染是用于提高网页性能（尤其是提高用户感知的加载速度），以尽快呈现页面的技术。
 - 一些举例：图片懒加载、确定显示内容的优先级（分层次渲染）。
 
+### SEO优化？
+
+- 合理的title、description、keywords：搜索对着三项的权重逐个减小，title值强调重点即可，重要关键词出现不要超过2次，而且要靠前，不同页面title要有所不同；
+- 语义化的HTML代码，符合W3C规范：语义化代码让搜索引擎容易理解网页。
+- 重要内容HTML代码放在最前：搜索引擎抓取HTML顺序是从上到下，有的搜索引擎对抓取长度有限制，保证重要内容一定会被抓取。
+- 重要内容不要用js输出：爬虫不会执行js获取内容。
+- 少用iframe：搜索引擎不会抓取iframe中的内容。
+- 非装饰性图片必须加alt。
+- 提高网站速度：网站速度是搜索引擎排序的一个重要指标。
+
+### HTTP request报文结构是怎样的
+
+- 首行是**请求行**包括：**请求方法**，**请求URI**，**协议版本**，**CRLF**
+- 首行之后是若干行**请求头**，包括**general-header**，**request-header**或者**entity-header**，每个一行以CRLF结束
+-  请求头和消息实体之间有一个**CRLF分隔**
+- 根据实际请求需要可能包含一个**消息实体** 一个请求报文例子如下：
+
+```http
+GET /Protocols/rfc2616/rfc2616-sec5.html HTTP/1.1
+Host: www.w3.org
+Connection: keep-alive
+Cache-Control: max-age=0
+Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8
+User-Agent: Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/35.0.1916.153 Safari/537.36
+Referer: https://www.google.com.hk/
+Accept-Encoding: gzip,deflate,sdch
+Accept-Language: zh-CN,zh;q=0.8,en;q=0.6
+Cookie: authorstyle=yes
+If-None-Match: "2cc8-3e3073913b100"
+If-Modified-Since: Wed, 01 Sep 2004 13:24:52 GMT
+
+name=qiu&age=25
+```
+
+### HTTP response报文结构是怎样的
+
+- 首行是响应头包括：**HTTP版本，状态码，状态描述**，后面跟一个CRLF
+- 首行之后是**若干行响应头**，包括：**通用头部，响应头部，实体头部**
+- 响应头部和响应实体之间用**一个CRLF空行**分隔
+- 最后是一个可能的**消息实体** 响应报文例子如下：
+
+```http
+HTTP/1.1 200 OK
+Date: Tue, 08 Jul 2014 05:28:43 GMT
+Server: Apache/2
+Last-Modified: Wed, 01 Sep 2004 13:24:52 GMT
+ETag: "40d7-3e3073913b100"
+Accept-Ranges: bytes
+Content-Length: 16599
+Cache-Control: max-age=21600
+Expires: Tue, 08 Jul 2014 11:28:43 GMT
+P3P: policyref="http://www.w3.org/2001/05/P3P/p3p.xml"
+Content-Type: text/html; charset=iso-8859-1
+
+{"name": "qiu", "age": 25}
+```
+
+### 如何进行网站性能优化
+
+- content方面：
+  - 减少HTTP请求：合并文件、CSS精灵、inline Image
+  - 减少DNS查询：DNS查询完成之前浏览器不能从这个主机下载任何任何文件。方法：DNS缓存、将资源分布到恰当数量的主机名，平衡并行下载和DNS查询
+  - 避免重定向：多余的中间访问
+  - 使Ajax可缓存
+  - 非必须组件延迟加载
+  - 未来所需组件预加载
+  - 减少DOM元素数量
+  - 将资源放到不同的域下：浏览器同时从一个域下载资源的数目有限，增加域可以提高并行下载量
+  - 减少iframe数量
+- server方面：
+  - 使用CDN
+  - 添加Expires或者Cache-Control响应头
+  - 对组件使用Gzip压缩
+  - Ajax使用GET进行请求
+  - 避免空src的img标签
+- Cookie:
+  - 减少cookie大小。
+  - 引入资源的域名不要加入cookie。
+- css：
+  - 将样式表放到页面顶部
+  - 不使用CSS表达式
+  - 不使用@import
+- JavaScript：
+  - 将脚本放到页面底部
+  - 将javascript和css从外部引入
+  - 压缩javascript和css
+  - 减少DOM访问
+  - 合理设计事件监听器
+
+- 图片方面：
+  - 优化图片：根据实际颜色需要选择色深、压缩
+  - 不要在HTML中拉伸图片
+  - 保证favicon.ico小并且可缓存
+
+### HTTP状态码及其含义
+
+1XX:信息状态码。
+
+- **100 Continue**：客户端应当继续发送请求。
+- **101 Switching Protocols**：服务器已经理解了客户端的请求，并将通过Upgrade消息头通知客户端采用不同的协议来完成这个请求。
+
+2XX：成功状态码。
+
+- **200 OK**：请求成功。
+- 201：表示请求已经被成功处理，并且创建了新的资源。
+- 202：服务器端已经收到请求消息，但是尚未进行处理。
+- 204：目前请求成功，但客户端不需要更新其现有页面。
+- 205：通知客户端重置文档视图，比如清空表单内容、重置 canvas 状态或者刷新用户界面。
+- 206：请求已成功，并且主体包含所请求的数据区间，该数据区间是在请求的 [`Range`](https://developer.mozilla.org/zh-CN/docs/Web/HTTP/Headers/Range) 首部指定的。
+
+3XX：重定向。
+
+- 300：表示重定向的响应状态码，表示该请求拥有多种可能的响应。用户代理或者用户自身应该从中选择一个。
+- 301：说明请求的资源已经被移动到了由 [`Location`](https://developer.mozilla.org/zh-CN/docs/Web/HTTP/Headers/Location) 头部指定的url上，是固定的不会再改变。
+- 304：可以使用缓存的内容。
+
+4XX：客户端错误。
+
+- 400：由于语法无效，服务器无法理解该请求。 
+- 401：代表客户端错误，指的是由于缺乏目标资源要求的身份验证凭证，发送的请求未得到满足。
+
+- 403：客户端没有权利访问所请求内容,服务器拒绝本次请求。
+- 404：服务器找不到所请求的资源.
+
+5XX: 服务器错误
+
+- 500: 服务器遇到未知的无法解决的问题.
+- 501:服务器不支持该请求中使用的方法.
+- 502:服务器作为网关且从上游服务器获取到了一个无效的HTTP响应.
+- 504:服务器作为网关且不能从上游服务器及时的得到响应返回给客户端.
+- 505:服务器不支持客户端发送的HTTP请求中所使用的HTTP协议版本.
