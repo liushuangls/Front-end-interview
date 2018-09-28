@@ -362,6 +362,22 @@ function flat(arr) {
 flat([1, [2, [ [3, 4], 5], 6]])
 ```
 
+### 函数参数传递问题
+
+```js
+function setName(obj) {
+  obj.name = 'ted'
+  obj = new Object()
+  obj.name = 'marry'
+}
+let o = new Object()
+o.name = 'tom'
+setName(o)
+console.log(o.name) // ted
+// 函数的参数传递原理：在函数内部，隐式声明形参，将传入的 值/地址 复制给形参
+// 在obj被重新赋值后，它的地址不再是o的地址，所以修改它不再影响o。因此结果不是marry
+```
+
 
 
 ## CSS
@@ -579,3 +595,4 @@ Content-Type: text/html; charset=iso-8859-1
 - 502:服务器作为网关且从上游服务器获取到了一个无效的HTTP响应.
 - 504:服务器作为网关且不能从上游服务器及时的得到响应返回给客户端.
 - 505:服务器不支持客户端发送的HTTP请求中所使用的HTTP协议版本.
+
