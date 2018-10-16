@@ -31,6 +31,8 @@ setTimeout(obj.fn.bind(obj), 10)
 
 - 箭头函数中的`this`继承自它的外层作用域，并且不能被改变。
 
+- 箭头函数不能作为构造函数调用。
+
 - 箭头函数会把 `arguments` 当成一个普通的变量，但是`arguments`可以用`...rest`取代。
 
   ```js
@@ -344,22 +346,19 @@ function deepClone(obj) {
 ### 完成一个函数,接受数组作为参数,数组元素为整数或者数组,数组元素包含整数或数组,函数返回扁平化后的数组
 
 ```js
-function flat(arr) {
-  let newArr = []
-  function f(arr) {
-     for (let v of arr) {
-       if (Array.isArray(v)) {
-         f(v)
-       } else {
-         newArr.push(v)
-       }
-     }
+function flat(arr, newArr = []) {
+  for (let v of arr) {
+    if (Array.isArray(v)) {
+      flat(v, newArr)
+    } else {
+      newArr.push(v)
+    }
   }
-  f(arr)
   return newArr
 }
 
-flat([1, [2, [ [3, 4], 5], 6]])
+
+console.log(flat([1, [2, [[3, 4], 5], 6]]))
 ```
 
 ### 函数参数传递问题
@@ -419,7 +418,6 @@ console.log(o.name) // ted
 ### 什么情况下，用`translate()`而不用绝对定位？什么时候，情况相反。
 
 - `translate()`是`transform`的一个值。改变`transform`或`opacity`不会触发浏览器重新布局（reflow）或重绘（repaint），只会触发复合（compositions）。而改变绝对定位会触发重新布局，进而触发重绘和复合。 因此`translate()`更高效，可以缩短平滑动画的绘制时间。
-
 - 当使用`translate()`时，元素仍然占据其原始空间（有点像`position：relative`），这与改变绝对定位不同。
 
 ### `link`与`@import`的区别
@@ -439,7 +437,6 @@ console.log(o.name) // ted
 - `<!doctype>`声明不是一个HTML标签，是一个用于告诉浏览器当前HTMl版本的指令。
 - 现代浏览器的html布局引擎通过检查doctype决定使用兼容模式还是标准模式对文档进行渲染，一些浏览器有一个接近标准模型。
 - 在HTML4.01中`<!doctype>`声明指向一个DTD，由于HTML4.01基于SGML，所以DTD指定了标记规则以保证浏览器正确渲染内容。
-
 - HTML5不基于SGML，所以不用指定DTD。
 
 ### HTML5有哪些更新？
@@ -449,7 +446,6 @@ console.log(o.name) // ted
 - 离线 & 存储：能够让网页在客户端本地存储数据以及更高效地离线运行。
 - 多媒体：使 video 和 audio 成为了在所有 Web 中的一等公民。
 - 2D / 3D 绘图 & 效果：提供了一个更加分化范围的呈现选择（Canvas、WebGL、SVG）。
-
 - 性能 & 集成：提供了非常显著的性能优化和更有效的计算机硬件使用（Web Workers）。
 - 设备访问 Device Access：能够处理各种输入和输出设备（Camera API、地理位置、）。
 - 样式设计：CSS3。
@@ -478,7 +474,7 @@ console.log(o.name) // ted
 
 - 首行是**请求行**包括：**请求方法**，**请求URI**，**协议版本**，**CRLF**
 - 首行之后是若干行**请求头**，包括**general-header**，**request-header**或者**entity-header**，每个一行以CRLF结束
--  请求头和消息实体之间有一个**CRLF分隔**
+- 请求头和消息实体之间有一个**CRLF分隔**
 - 根据实际请求需要可能包含一个**消息实体** 一个请求报文例子如下：
 
 ```http
@@ -552,7 +548,6 @@ Content-Type: text/html; charset=iso-8859-1
   - 压缩javascript和css
   - 减少DOM访问
   - 合理设计事件监听器
-
 - 图片方面：
   - 优化图片：根据实际颜色需要选择色深、压缩
   - 不要在HTML中拉伸图片
@@ -584,7 +579,6 @@ Content-Type: text/html; charset=iso-8859-1
 
 - 400：由于语法无效，服务器无法理解该请求。 
 - 401：代表客户端错误，指的是由于缺乏目标资源要求的身份验证凭证，发送的请求未得到满足。
-
 - 403：客户端没有权利访问所请求内容,服务器拒绝本次请求。
 - 404：服务器找不到所请求的资源.
 
