@@ -1,8 +1,11 @@
+
+
 ## 目录
 
 - [JavaScript](#javascript)
 - [CSS](#css)
 - [HTML](#html)
+- [前端框架](前端框架)
 
 ## JavaScript
 
@@ -430,6 +433,8 @@ console.log(o.name) // ted
 - inline：`text-align: center;`、`line-height`。
 - block:`margin:auto`、 position 加 translate、绝对定位、flex
 
+
+
 ## HTML
 
 ### `DOCTYPE`有什么用？
@@ -589,4 +594,28 @@ Content-Type: text/html; charset=iso-8859-1
 - 502:服务器作为网关且从上游服务器获取到了一个无效的HTTP响应.
 - 504:服务器作为网关且不能从上游服务器及时的得到响应返回给客户端.
 - 505:服务器不支持客户端发送的HTTP请求中所使用的HTTP协议版本.
+
+
+
+## 前端框架
+
+### react生命周期
+
+```js
+Mounting:
+componentWillMount => render => componentDidMount
+
+Updation:
+props: componentWillReceiveProps => shouldComponentUpdate => componentWillUpdate => render => componentDidUpdate
+states: shouldComponentUpdate => componentWillUpdate => render => componentDidUpdate
+
+Unmunting:
+componentWillUnmount
+```
+
+### vue生命周期
+
+```js
+beforeCreate => created => beforeMount => mounted => beforeUpdate => updated => beforeDestroy => destroyed
+```
 
