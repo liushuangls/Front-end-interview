@@ -335,6 +335,7 @@ function deepClone(obj) {
         return new RegExp(obj.source, flags.join(''));
     }
 
+    // 通过constructor实现继承
     var result = Array.isArray(obj) ? [] :
         obj.constructor ? new obj.constructor() : {};
 
