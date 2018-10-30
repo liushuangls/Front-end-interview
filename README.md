@@ -3,7 +3,6 @@
 ## 目录
 
 - [JavaScript](#javascript)
-  - [setTimeout中的this指向？](#setTimeout中的this指向？)
 - [CSS](#css)
 - [HTML](#html)
 - [前端框架](#前端框架)
