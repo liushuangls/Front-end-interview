@@ -620,3 +620,13 @@ componentWillUnmount
 beforeCreate => created => beforeMount => mounted => beforeUpdate => updated => beforeDestroy => destroyed
 ```
 
+### react Purecomponent vs component
+
+```js
+PureComponent通过prop和state的浅比较来实现shouldComponentUpdate，某些情况下可以用PureComponent提升性能
+
+PureComponent不仅会影响本身，而且会影响子组件
+```
+
+
+
