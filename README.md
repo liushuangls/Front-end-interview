@@ -628,5 +628,31 @@ PureComponent通过prop和state的浅比较来实现shouldComponentUpdate，某�
 PureComponent不仅会影响本身，而且会影响子组件
 ```
 
+### React 中 keys 的作用是什么？
+在开发过程中，我们需要保证某个元素的 key 在其同级元素中具有唯一性。在 React Diff 算法中 React 会借助元素的 Key 值来判断该元素是新近创建的还是被移动而来的元素，从而减少不必要的元素重渲染。此外，React 还需要借助 Key 值来判断元素与本地状态的关联关系，因此我们绝不可忽视转换函数中 Key 的重要性。
 
+### 为什么虚拟 dom 会提高性能?
+虚拟 DOM 使用 JS对象来描述真实DOM，并通过 JS 对象来实现 diff 算法，减少了DOM操作，从而实现性能提升。
 
+### react diff 原理
+- 把树形结构按照层级分解，只比较同级元素。
+
+### 何为高阶组件(higher order component)
+高阶组件是一个以组件为参数并返回一个新组件的函数。HOC 运行你重用代码、逻辑和引导抽象。最常见的可能是 Redux 的 connect 函数。除了简单分享工具库和简单的组合，HOC 最好的方式是共享 React 组件之间的行为。如果你发现你在不同的地方写了大量代码来做同一件事时，就应该考虑将代码重构为可重用的 HOC。
+
+### 为什么建议传递给 setState 的参数是一个 callback 而不是一个对象
+- 因为 this.props 和 this.state 的更新可能是异步的，不能依赖它们的值去计算下一个 state。
+- react可以利用 callback 实现更新合并。
+
+### (在构造函数中)调用 super(props) 的目的是什么
+在 super() 被调用之前，子类是不能使用 this 的，在 ES2015 中，子类必须在 constructor 中调用 super()。
+传递 props 给 super() 的原因则是便于(在子类中)能在 constructor 访问 this.props。
+
+### 应该在 React 组件的何处发起 Ajax 请求
+在 React 组件中，应该在 componentDidMount 中发起网络请求。
+componentWillMount 不能保证在组件挂载之前 Ajax 请求已经完成，如果是这样，也就意味着你将尝试在一个未挂载的组件上调用 setState，这将不起作用。
+
+### 说一下 redux
+- redux 是一个应用数据流框架，主要是解决了组件间状态共享的问题，主要有三个核心模块，action，store，reducer。
+- store用于存储数据，视图层通过 订阅store 来保持状态同步，通过提交action 给 store，store使用reducer来处理action，来达到更新 store 的目的。
+- 当某个组件的数据更新时，其它所有组件都会触发 mapStateToProps，这时应该通过 PureComponent 或者 shouldComponentUpdate 来优化。
