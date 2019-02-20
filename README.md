@@ -656,3 +656,7 @@ componentWillMount 不能保证在组件挂载之前 Ajax 请求已经完成，�
 - redux 是一个应用数据流框架，主要是解决了组件间状态共享的问题，主要有三个核心模块，action，store，reducer。
 - store用于存储数据，视图层通过 订阅store 来保持状态同步，通过提交action 给 store，store使用reducer来处理action，来达到更新 store 的目的。
 - 当某个组件的数据更新时，其它所有组件都会触发 mapStateToProps，这时应该通过 PureComponent 或者 shouldComponentUpdate 来优化。
+
+### 单项数据流
+- 单向数据流是指数据的流向只能由父组件通过props将数据传递给子组件，不能由子组件向父组件传递数据，子组件也不能修改父组件传递的数据。
+- 优点：数据总是清晰的单向进行流动，便于维护并且可以预测。
